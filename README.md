@@ -57,6 +57,7 @@ Do not rely on CSS classes, text content, or DOM structure in UI tests.
 
 ## Notes
 - Login stores `token` and `accountId` in localStorage.
+- Dashboard includes fund and make payment forms.
 - 401 responses should trigger logout and re-render.
 - 403 responses should show an error banner.
 - Data is deterministic based on backend responses; no client-side mocking.

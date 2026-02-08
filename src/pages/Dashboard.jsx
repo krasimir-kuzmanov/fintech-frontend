@@ -10,6 +10,10 @@ function Dashboard({ auth }) {
   const [error, setError] = useState(null)
   const [fundAmount, setFundAmount] = useState('')
   const [fundError, setFundError] = useState(null)
+  const [toAccountId, setToAccountId] = useState('')
+  const [paymentAmount, setPaymentAmount] = useState('')
+  const [paymentError, setPaymentError] = useState(null)
+  const [paymentSuccess, setPaymentSuccess] = useState(false)
   const [transactions, setTransactions] = useState([])
 
   async function loadBalance() {
@@ -46,6 +50,32 @@ function Dashboard({ auth }) {
       loadBalance()
     } catch (err) {
       setFundError(err?.error || err?.message || 'Fund failed')
+    }
+  }
+
+  async function handlePayment(e) {
+    e.preventDefault()
+    setPaymentError(null)
+    setPaymentSuccess(false)
+
+    try {
+      await apiClient.makePayment(
+        {
+          fromAccountId: accountId,
+          toAccountId,
+          amount: paymentAmount,
+        },
+        token
+      )
+
+      setToAccountId('')
+      setPaymentAmount('')
+      setPaymentSuccess(true)
+
+      loadBalance()
+      loadTransactions()
+    } catch (err) {
+      setPaymentError(err?.errorCode || 'Payment failed')
     }
   }
 
@@ -86,6 +116,32 @@ function Dashboard({ auth }) {
         <button data-testid="fund-submit">Fund</button>
 
         {fundError && <div data-testid="fund-error">{fundError}</div>}
+      </form>
+
+      <form onSubmit={handlePayment}>
+        <h3>Make Payment</h3>
+
+        <input
+          data-testid="payment-to-account"
+          placeholder="Recipient Account ID"
+          value={toAccountId}
+          onChange={(e) => setToAccountId(e.target.value)}
+        />
+
+        <input
+          data-testid="payment-amount"
+          placeholder="Amount"
+          value={paymentAmount}
+          onChange={(e) => setPaymentAmount(e.target.value)}
+        />
+
+        <button data-testid="payment-submit">Send</button>
+
+        {paymentError && <div data-testid="payment-error">{paymentError}</div>}
+
+        {paymentSuccess && (
+          <div data-testid="payment-success">Payment successful</div>
+        )}
       </form>
 
       <div data-testid="transactions-section">
