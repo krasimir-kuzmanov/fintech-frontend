@@ -1,16 +1,53 @@
-# React + Vite
+# fintech-frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React + Vite frontend for the Fintech project.
 
-Currently, two official plugins are available:
+This frontend is intentionally designed to be consumed by automated UI and API test suites (Selenide).
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+**Tech Stack**
+- React 19 + Vite 7
+- Routing: React Router
+- Styling: Plain CSS
+- API: Fetch
+- Auth: Bearer token stored in localStorage
 
-## React Compiler
+**Project Layout**
+- App shell + routes: `src/App.jsx`
+- Auth context: `src/hooks/useAuth.js`
+- API client: `src/api/client.js`
+- Pages: `src/pages/*`
+- Components: `src/components/*`
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+**Runtime Configuration**
+- Base API URL: `VITE_API_BASE_URL`
 
-## Expanding the ESLint configuration
+## Prerequisites
+- Node.js 18+ recommended
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Run Locally
+From the project root:
+
+```bash
+npm install
+npm run dev
+```
+
+App starts at:
+- `http://localhost:5173`
+
+> Set `VITE_API_BASE_URL` to point to the backend, for example:
+> `VITE_API_BASE_URL=http://localhost:8080`
+
+## Pages and Flows
+- Register: `POST /auth/register`
+- Login: `POST /auth/login`
+- Dashboard: balance, fund account, make payment, transactions list
+
+## Testability Rules
+All interactive elements and key values are labeled with stable `data-testid` selectors.
+Do not rely on CSS classes, text content, or DOM structure in UI tests.
+
+## Notes
+- 401 responses trigger logout + redirect to `/login`.
+- 403 responses show an error banner.
+- Data is deterministic based on backend responses; no client-side mocking.
