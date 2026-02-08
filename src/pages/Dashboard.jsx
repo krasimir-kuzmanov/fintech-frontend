@@ -16,11 +16,25 @@ function Dashboard({ auth }) {
   const [paymentSuccess, setPaymentSuccess] = useState(false)
   const [transactions, setTransactions] = useState([])
 
+  function handleUnauthorized(err) {
+    if (err?.status === 401 || err?.error === 'UNAUTHORIZED') {
+      logout()
+      navigate('/login')
+      return true
+    }
+
+    return false
+  }
+
   async function loadBalance() {
     try {
       const response = await apiClient.getBalance(accountId, token)
       setBalance(response.balance)
-    } catch {
+    } catch (err) {
+      if (handleUnauthorized(err)) {
+        return
+      }
+
       setError('Failed to load balance')
     }
   }
@@ -30,6 +44,10 @@ function Dashboard({ auth }) {
       const response = await apiClient.getTransactions(accountId, token)
       setTransactions(response)
     } catch (err) {
+      if (handleUnauthorized(err)) {
+        return
+      }
+
       console.error(err)
     }
   }
@@ -49,6 +67,10 @@ function Dashboard({ auth }) {
       setFundAmount('')
       loadBalance()
     } catch (err) {
+      if (handleUnauthorized(err)) {
+        return
+      }
+
       setFundError(err?.error || err?.message || 'Fund failed')
     }
   }
@@ -75,13 +97,23 @@ function Dashboard({ auth }) {
       loadBalance()
       loadTransactions()
     } catch (err) {
-      setPaymentError(err?.errorCode || 'Payment failed')
+      if (handleUnauthorized(err)) {
+        return
+      }
+
+      setPaymentError(err?.errorCode || err?.error || err?.message || 'Payment failed')
     }
   }
 
-  function handleLogout() {
-    logout()
-    navigate('/login')
+  async function handleLogout() {
+    try {
+      await apiClient.logout(token)
+    } catch (err) {
+      console.error('Logout request failed', err)
+    } finally {
+      logout()
+      navigate('/login')
+    }
   }
 
   return (
