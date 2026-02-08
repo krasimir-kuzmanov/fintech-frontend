@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 This project follows Keep a Changelog format.
 
+## 0.0.8
+- Add make payment form to dashboard with success/error handling.
+- Refresh balance and transactions after successful payment.
+
 ## 0.0.7
 - Simplify dashboard to balance, funding, transactions, and logout only.
 - Add fund account form with error handling.
