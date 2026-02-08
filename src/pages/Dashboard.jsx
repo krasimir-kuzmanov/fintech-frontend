@@ -1,15 +1,12 @@
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { api } from '../api/client.js'
-import { useAuth } from '../hooks/useAuth.js'
+import { apiClient } from '../api/client.js'
 import BalanceCard from '../components/BalanceCard.jsx'
 import FundForm from '../components/FundForm.jsx'
 import PaymentForm from '../components/PaymentForm.jsx'
 import TransactionList from '../components/TransactionList.jsx'
 
-const Dashboard = () => {
-  const navigate = useNavigate()
-  const { userId, token, logout } = useAuth()
+const Dashboard = ({ auth }) => {
+  const { accountId, token, logout } = auth
   const [account, setAccount] = useState(null)
   const [transactions, setTransactions] = useState([])
   const [error, setError] = useState('')
@@ -19,35 +16,34 @@ const Dashboard = () => {
 
   const handleUnauthorized = () => {
     logout()
-    navigate('/login')
   }
 
   const loadAccount = async () => {
-    if (!userId || !token) return
-    const result = await api.getAccount({ accountId: userId, token })
-    if (!result.ok) {
-      if (result.status === 401) {
+    if (!accountId || !token) return
+    try {
+      const data = await apiClient.getBalance(accountId, token)
+      setAccount(data)
+    } catch (error) {
+      if (error?.status === 401) {
         handleUnauthorized()
         return
       }
-      setError(result.error || 'Failed to load account')
-      return
+      setError(error?.error || 'Failed to load account')
     }
-    setAccount(result.data)
   }
 
   const loadTransactions = async () => {
-    if (!userId || !token) return
-    const result = await api.getTransactions({ accountId: userId, token })
-    if (!result.ok) {
-      if (result.status === 401) {
+    if (!accountId || !token) return
+    try {
+      const data = await apiClient.getTransactions(accountId, token)
+      setTransactions(data)
+    } catch (error) {
+      if (error?.status === 401) {
         handleUnauthorized()
         return
       }
-      setError(result.error || 'Failed to load transactions')
-      return
+      setError(error?.error || 'Failed to load transactions')
     }
-    setTransactions(result.data)
   }
 
   const refreshAll = async () => {
@@ -66,48 +62,45 @@ const Dashboard = () => {
     setError('')
     setIsFunding(true)
 
-    const result = await api.fundAccount({ accountId: userId, amount, token })
-    if (!result.ok) {
-      if (result.status === 401) {
+    try {
+      const data = await apiClient.fundAccount(accountId, amount, token)
+      setAccount(data)
+      await loadTransactions()
+      setIsFunding(false)
+    } catch (error) {
+      if (error?.status === 401) {
         handleUnauthorized()
         return
       }
-      setError(result.error || 'Funding failed')
+      setError(error?.error || 'Funding failed')
       setIsFunding(false)
-      return
     }
-
-    setAccount(result.data)
-    await loadTransactions()
-    setIsFunding(false)
   }
 
   const handlePayment = async ({ fromAccountId, toAccountId, amount }) => {
     setError('')
     setIsPaying(true)
 
-    const result = await api.makePayment({ fromAccountId, toAccountId, amount, token })
-    if (!result.ok) {
-      if (result.status === 401) {
+    try {
+      await apiClient.makePayment({ fromAccountId, toAccountId, amount }, token)
+      await refreshAll()
+      setIsPaying(false)
+    } catch (error) {
+      if (error?.status === 401) {
         handleUnauthorized()
         return
       }
-      if (result.status === 403) {
+      if (error?.status === 403) {
         setError('FORBIDDEN')
       } else {
-        setError(result.error || 'Payment failed')
+        setError(error?.error || 'Payment failed')
       }
       setIsPaying(false)
-      return
     }
-
-    await refreshAll()
-    setIsPaying(false)
   }
 
   const handleLogout = () => {
     logout()
-    navigate('/login')
   }
 
   return (
@@ -145,10 +138,10 @@ const Dashboard = () => {
       )}
 
       <div className="grid" data-testid="dashboard-grid">
-        <BalanceCard accountId={userId} balance={account?.balance} />
+        <BalanceCard accountId={accountId} balance={account?.balance} />
         <FundForm onSubmit={handleFund} isSubmitting={isFunding} />
         <PaymentForm
-          fromAccountId={userId}
+          fromAccountId={accountId}
           onSubmit={handlePayment}
           isSubmitting={isPaying}
         />

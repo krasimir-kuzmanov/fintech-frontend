@@ -1,51 +1,30 @@
-import { createContext, useContext, useMemo, useState } from 'react'
+import { useState } from 'react'
 
-const AuthContext = createContext(null)
+export function useAuth() {
+  const [token, setToken] = useState(() => localStorage.getItem('token'))
+  const [accountId, setAccountId] = useState(() => localStorage.getItem('accountId'))
 
-const STORAGE_KEY = 'fintech-auth'
+  function login(authResponse) {
+    setToken(authResponse.token)
+    setAccountId(authResponse.accountId)
 
-const readStoredAuth = () => {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY)
-    if (!raw) return null
-    return JSON.parse(raw)
-  } catch {
-    return null
-  }
-}
-
-export const AuthProvider = ({ children }) => {
-  const [auth, setAuth] = useState(() => readStoredAuth())
-
-  const login = ({ userId, token }) => {
-    const next = { userId, token }
-    setAuth(next)
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(next))
+    localStorage.setItem('token', authResponse.token)
+    localStorage.setItem('accountId', authResponse.accountId)
   }
 
-  const logout = () => {
-    setAuth(null)
-    localStorage.removeItem(STORAGE_KEY)
+  function logout() {
+    setToken(null)
+    setAccountId(null)
+
+    localStorage.removeItem('token')
+    localStorage.removeItem('accountId')
   }
 
-  const value = useMemo(
-    () => ({
-      userId: auth?.userId || null,
-      token: auth?.token || null,
-      isAuthenticated: Boolean(auth?.token),
-      login,
-      logout,
-    }),
-    [auth]
-  )
-
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
-}
-
-export const useAuth = () => {
-  const ctx = useContext(AuthContext)
-  if (!ctx) {
-    throw new Error('useAuth must be used inside AuthProvider')
+  return {
+    token,
+    accountId,
+    isAuthenticated: Boolean(token),
+    login,
+    logout,
   }
-  return ctx
 }

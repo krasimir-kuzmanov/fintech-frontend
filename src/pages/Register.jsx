@@ -1,29 +1,28 @@
 import { useState } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
-import { api } from '../api/client.js'
+import { apiClient } from '../api/client.js'
 
 const Register = () => {
-  const navigate = useNavigate()
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [success, setSuccess] = useState('')
 
   const handleSubmit = async (event) => {
     event.preventDefault()
     setError('')
+    setSuccess('')
     setIsSubmitting(true)
 
-    const result = await api.register({ username, password })
-
-    if (!result.ok) {
-      setError(result.error || 'Registration failed')
+    try {
+      await apiClient.register({ username, password })
+      setIsSubmitting(false)
+      setSuccess('Registration successful. You can log in above.')
+    } catch (error) {
+      setError(error?.error || 'Registration failed')
       setIsSubmitting(false)
       return
     }
-
-    setIsSubmitting(false)
-    navigate('/login?registered=1')
   }
 
   return (
@@ -36,6 +35,12 @@ const Register = () => {
       {error && (
         <div className="banner banner-error" data-testid="register-error">
           {error}
+        </div>
+      )}
+
+      {success && (
+        <div className="banner banner-success" data-testid="register-success">
+          {success}
         </div>
       )}
 
@@ -69,10 +74,7 @@ const Register = () => {
       </form>
 
       <div className="page-footer">
-        <span>Already registered?</span>
-        <Link data-testid="register-login-link" to="/login">
-          Login
-        </Link>
+        <span>Already registered? Use the login form above.</span>
       </div>
     </div>
   )
