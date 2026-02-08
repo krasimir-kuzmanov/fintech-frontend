@@ -3,6 +3,11 @@
 All notable changes to this project will be documented in this file.
 This project follows Keep a Changelog format.
 
+## 0.0.7
+- Simplify dashboard to balance, funding, transactions, and logout only.
+- Add fund account form with error handling.
+- Add transactions list display.
+
 ## 0.0.6
 - Add React Router with auth-guarded routes and redirects.
 - Add navigation between login and register via routes.
