@@ -1,155 +1,110 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { apiClient } from '../api/client.js'
-import BalanceCard from '../components/BalanceCard.jsx'
-import FundForm from '../components/FundForm.jsx'
-import PaymentForm from '../components/PaymentForm.jsx'
-import TransactionList from '../components/TransactionList.jsx'
+import { apiClient } from '../api/client'
 
-const Dashboard = ({ auth }) => {
+function Dashboard({ auth }) {
+  const { token, accountId, logout } = auth
   const navigate = useNavigate()
-  const { accountId, token, logout } = auth
-  const [account, setAccount] = useState(null)
+
+  const [balance, setBalance] = useState(null)
+  const [error, setError] = useState(null)
+  const [fundAmount, setFundAmount] = useState('')
+  const [fundError, setFundError] = useState(null)
   const [transactions, setTransactions] = useState([])
-  const [error, setError] = useState('')
-  const [isFunding, setIsFunding] = useState(false)
-  const [isPaying, setIsPaying] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
 
-  const handleUnauthorized = () => {
-    logout()
-    navigate('/login')
-  }
-
-  const loadAccount = async () => {
-    if (!accountId || !token) return
+  async function loadBalance() {
     try {
-      const data = await apiClient.getBalance(accountId, token)
-      setAccount(data)
-    } catch (error) {
-      if (error?.status === 401) {
-        handleUnauthorized()
-        return
-      }
-      setError(error?.error || 'Failed to load account')
+      const response = await apiClient.getBalance(accountId, token)
+      setBalance(response.balance)
+    } catch {
+      setError('Failed to load balance')
     }
   }
 
-  const loadTransactions = async () => {
-    if (!accountId || !token) return
+  async function loadTransactions() {
     try {
-      const data = await apiClient.getTransactions(accountId, token)
-      setTransactions(data)
-    } catch (error) {
-      if (error?.status === 401) {
-        handleUnauthorized()
-        return
-      }
-      setError(error?.error || 'Failed to load transactions')
+      const response = await apiClient.getTransactions(accountId, token)
+      setTransactions(response)
+    } catch (err) {
+      console.error(err)
     }
-  }
-
-  const refreshAll = async () => {
-    setError('')
-    setIsLoading(true)
-    await Promise.all([loadAccount(), loadTransactions()])
-    setIsLoading(false)
   }
 
   useEffect(() => {
-    refreshAll()
+    loadBalance()
+    loadTransactions()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  const handleFund = async ({ amount }) => {
-    setError('')
-    setIsFunding(true)
+  async function handleFund(e) {
+    e.preventDefault()
+    setFundError(null)
 
     try {
-      const data = await apiClient.fundAccount(accountId, amount, token)
-      setAccount(data)
-      await loadTransactions()
-      setIsFunding(false)
-    } catch (error) {
-      if (error?.status === 401) {
-        handleUnauthorized()
-        return
-      }
-      setError(error?.error || 'Funding failed')
-      setIsFunding(false)
+      await apiClient.fundAccount(accountId, fundAmount, token)
+      setFundAmount('')
+      loadBalance()
+    } catch (err) {
+      setFundError(err?.error || err?.message || 'Fund failed')
     }
   }
 
-  const handlePayment = async ({ fromAccountId, toAccountId, amount }) => {
-    setError('')
-    setIsPaying(true)
-
-    try {
-      await apiClient.makePayment({ fromAccountId, toAccountId, amount }, token)
-      await refreshAll()
-      setIsPaying(false)
-    } catch (error) {
-      if (error?.status === 401) {
-        handleUnauthorized()
-        return
-      }
-      if (error?.status === 403) {
-        setError('FORBIDDEN')
-      } else {
-        setError(error?.error || 'Payment failed')
-      }
-      setIsPaying(false)
-    }
-  }
-
-  const handleLogout = () => {
+  function handleLogout() {
     logout()
     navigate('/login')
   }
 
   return (
-    <div className="page" data-testid="dashboard-page">
-      <div className="page-header">
-        <div>
-          <h1>Dashboard</h1>
-          <p>Manage your balance and recent activity.</p>
-        </div>
-        <div className="header-actions">
-          <button
-            data-testid="dashboard-refresh"
-            className="secondary"
-            type="button"
-            onClick={refreshAll}
-            disabled={isLoading}
-          >
-            {isLoading ? 'Refreshing...' : 'Refresh'}
-          </button>
-          <button
-            data-testid="logout-submit"
-            className="ghost"
-            type="button"
-            onClick={handleLogout}
-          >
-            Logout
-          </button>
-        </div>
+    <div>
+      <h2>Dashboard</h2>
+
+      <button data-testid="logout-button" onClick={handleLogout}>
+        Logout
+      </button>
+
+      {error && <div data-testid="dashboard-error">{error}</div>}
+
+      <div data-testid="balance-section">
+        <h3>Balance</h3>
+        {balance === null ? (
+          <span>Loading...</span>
+        ) : (
+          <span data-testid="balance-value">{balance}</span>
+        )}
       </div>
 
-      {error && (
-        <div className="banner banner-error" data-testid="dashboard-error">
-          {error}
-        </div>
-      )}
+      <form onSubmit={handleFund}>
+        <h3>Fund Account</h3>
 
-      <div className="grid" data-testid="dashboard-grid">
-        <BalanceCard accountId={accountId} balance={account?.balance} />
-        <FundForm onSubmit={handleFund} isSubmitting={isFunding} />
-        <PaymentForm
-          fromAccountId={accountId}
-          onSubmit={handlePayment}
-          isSubmitting={isPaying}
+        <input
+          data-testid="fund-amount"
+          placeholder="Amount"
+          value={fundAmount}
+          onChange={(e) => setFundAmount(e.target.value)}
         />
-        <TransactionList transactions={transactions} />
+
+        <button data-testid="fund-submit">Fund</button>
+
+        {fundError && <div data-testid="fund-error">{fundError}</div>}
+      </form>
+
+      <div data-testid="transactions-section">
+        <h3>Transactions</h3>
+
+        {transactions.length === 0 ? (
+          <div>No transactions</div>
+        ) : (
+          <ul>
+            {transactions.map((tx) => {
+              const type = tx.fromAccountId === accountId ? 'Debit' : 'Credit'
+              return (
+                <li key={tx.transactionId} data-testid="transaction-item">
+                  {type} - {tx.amount}
+                </li>
+              )
+            })}
+          </ul>
+        )}
       </div>
     </div>
   )
