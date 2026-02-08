@@ -38,12 +38,9 @@ This project follows Keep a Changelog format.
 - Keep dashboard gated behind auth.
 
 ## 0.0.4
-- Add env-based backend URL via `.env`.
-- Add API client as a single source of truth for backend calls.
-- Add lightweight auth hook with localStorage persistence.
-- Simplify app shell (no router) and pass auth into pages.
-- Add login, register, and dashboard UI with stable data-testid selectors.
-- Add minimal styling and layout.
+- Add env-based backend URL via `.env` and introduce a centralized API client.
+- Add lightweight auth state with localStorage persistence and simplified app shell wiring.
+- Add login/register/dashboard UI with stable `data-testid` selectors and baseline styling.
 
 ## 0.0.3
 - Add basic UI layout scaffolding and styles.
