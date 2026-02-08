@@ -1,25 +1,31 @@
 import './App.css'
-import { useAuth } from './hooks/useAuth.js'
-import Login from './pages/Login.jsx'
-import Register from './pages/Register.jsx'
-import Dashboard from './pages/Dashboard.jsx'
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
+import { useAuth } from './hooks/useAuth'
+import Login from './pages/Login'
+import Register from './pages/Register'
+import Dashboard from './pages/Dashboard'
 
 function App() {
   const auth = useAuth()
 
-  if (!auth.isAuthenticated) {
-    return (
-      <div className="app-shell">
-        <Login auth={auth} />
-        <Register />
-      </div>
-    )
-  }
-
   return (
-    <div className="app-shell">
-      <Dashboard auth={auth} />
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route
+          path="/login"
+          element={auth.isAuthenticated ? <Navigate to="/dashboard" /> : <Login auth={auth} />}
+        />
+        <Route
+          path="/register"
+          element={auth.isAuthenticated ? <Navigate to="/dashboard" /> : <Register />}
+        />
+        <Route
+          path="/dashboard"
+          element={auth.isAuthenticated ? <Dashboard auth={auth} /> : <Navigate to="/login" />}
+        />
+        <Route path="*" element={<Navigate to="/login" />} />
+      </Routes>
+    </BrowserRouter>
   )
 }
 
