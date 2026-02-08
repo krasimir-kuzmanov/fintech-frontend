@@ -117,82 +117,129 @@ function Dashboard({ auth }) {
   }
 
   return (
-    <div>
-      <h2>Dashboard</h2>
+    <div className="page">
+      <div className="header">
+        <div>
+          <h2>Dashboard</h2>
+          <p className="subtitle">
+            Account ID: <span className="muted">{accountId}</span>
+          </p>
+        </div>
 
-      <button data-testid="logout-button" onClick={handleLogout}>
-        Logout
-      </button>
-
-      {error && <div data-testid="dashboard-error">{error}</div>}
-
-      <div data-testid="balance-section">
-        <h3>Balance</h3>
-        {balance === null ? (
-          <span>Loading...</span>
-        ) : (
-          <span data-testid="balance-value">{balance}</span>
-        )}
+        <button
+          className="secondary"
+          data-testid="logout-button"
+          onClick={handleLogout}
+        >
+          Logout
+        </button>
       </div>
 
-      <form onSubmit={handleFund}>
-        <h3>Fund Account</h3>
-
-        <input
-          data-testid="fund-amount"
-          placeholder="Amount"
-          value={fundAmount}
-          onChange={(e) => setFundAmount(e.target.value)}
-        />
-
-        <button data-testid="fund-submit">Fund</button>
-
-        {fundError && <div data-testid="fund-error">{fundError}</div>}
-      </form>
-
-      <form onSubmit={handlePayment}>
-        <h3>Make Payment</h3>
-
-        <input
-          data-testid="payment-to-account"
-          placeholder="Recipient Account ID"
-          value={toAccountId}
-          onChange={(e) => setToAccountId(e.target.value)}
-        />
-
-        <input
-          data-testid="payment-amount"
-          placeholder="Amount"
-          value={paymentAmount}
-          onChange={(e) => setPaymentAmount(e.target.value)}
-        />
-
-        <button data-testid="payment-submit">Send</button>
-
-        {paymentError && <div data-testid="payment-error">{paymentError}</div>}
-
-        {paymentSuccess && (
-          <div data-testid="payment-success">Payment successful</div>
+      <div className="stack">
+        {error && (
+          <div className="alert error" data-testid="dashboard-error">
+            {error}
+          </div>
         )}
-      </form>
 
-      <div data-testid="transactions-section">
-        <h3>Transactions</h3>
+        <div className="grid-2">
+          <div className="card" data-testid="balance-section">
+            <h3>Balance</h3>
+            {balance === null ? (
+              <span className="muted">Loading...</span>
+            ) : (
+              <span data-testid="balance-value">{balance}</span>
+            )}
+          </div>
 
-        {transactions.length === 0 ? (
-          <div>No transactions</div>
-        ) : (
-          <ul>
-            {transactions.map((tx) => {
-              const type = tx.fromAccountId === accountId ? 'Debit' : 'Credit'
-              return (
-                <li key={tx.transactionId} data-testid="transaction-item">
-                  {type} - {tx.amount}
-                </li>
-              )
-            })}
-          </ul>
-        )}
+          <div className="card">
+            <form onSubmit={handleFund}>
+              <h3>Fund Account</h3>
+
+              <input
+                data-testid="fund-amount"
+                placeholder="Amount"
+                value={fundAmount}
+                onChange={(e) => setFundAmount(e.target.value)}
+              />
+
+              <button className="primary" data-testid="fund-submit">
+                Fund
+              </button>
+
+              {fundError && (
+                <div className="alert error" data-testid="fund-error">
+                  {fundError}
+                </div>
+              )}
+            </form>
+          </div>
+        </div>
+
+        <div className="card">
+          <form onSubmit={handlePayment}>
+            <h3>Make Payment</h3>
+
+            <input
+              data-testid="payment-to-account"
+              placeholder="Recipient Account ID"
+              value={toAccountId}
+              onChange={(e) => setToAccountId(e.target.value)}
+            />
+
+            <input
+              data-testid="payment-amount"
+              placeholder="Amount"
+              value={paymentAmount}
+              onChange={(e) => setPaymentAmount(e.target.value)}
+            />
+
+            <button className="primary" data-testid="payment-submit">
+              Send
+            </button>
+
+            {paymentError && (
+              <div className="alert error" data-testid="payment-error">
+                {paymentError}
+              </div>
+            )}
+
+            {paymentSuccess && (
+              <div className="alert success" data-testid="payment-success">
+                Payment successful
+              </div>
+            )}
+          </form>
+        </div>
+
+        <div className="card" data-testid="transactions-section">
+          <h3>Transactions</h3>
+
+          {transactions.length === 0 ? (
+            <div className="muted">No transactions</div>
+          ) : (
+            <ul className="tx-list">
+              {transactions.map((tx) => {
+                const type = tx.fromAccountId === accountId ? 'Debit' : 'Credit'
+                return (
+                  <li
+                    key={tx.transactionId}
+                    className="tx-item"
+                    data-testid="transaction-item"
+                  >
+                    <div className="tx-left">
+                      <span className="tx-type">{type}</span>
+                      <span className="tx-meta">
+                        Tx: {tx.transactionId}
+                      </span>
+                    </div>
+                    <div>{tx.amount}</div>
+                  </li>
+                )
+              })}
+            </ul>
+          )}
+        </div>
       </div>
     </div>
   )

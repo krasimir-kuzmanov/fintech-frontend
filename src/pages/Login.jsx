@@ -22,36 +22,49 @@ function Login({ auth }) {
   }
 
   return (
-    <form onSubmit={handleSubmit}>
-      <h2>Login</h2>
+    <div className="page">
+      <div className="card">
+        <div className="header">
+          <h2>Login</h2>
+        </div>
 
-      <input
-        data-testid="login-username"
-        placeholder="Username"
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
-      />
+        <form onSubmit={handleSubmit}>
+          <input
+            data-testid="login-username"
+            placeholder="Username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+          />
 
-      <input
-        data-testid="login-password"
-        type="password"
-        placeholder="Password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      />
+          <input
+            data-testid="login-password"
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
 
-      <button data-testid="login-submit">Login</button>
+          <button className="primary" data-testid="login-submit">
+            Login
+          </button>
 
-      {error && <div data-testid="login-error">{error}</div>}
+          {error && (
+            <div className="alert error" data-testid="login-error">
+              {error}
+            </div>
+          )}
 
-      <button
-        type="button"
-        data-testid="go-to-register"
-        onClick={() => navigate('/register')}
-      >
-        Create account
-      </button>
-    </form>
+          <button
+            type="button"
+            className="link"
+            data-testid="go-to-register"
+            onClick={() => navigate('/register')}
+          >
+            Create account
+          </button>
+        </form>
+      </div>
+    </div>
   )
 }
 

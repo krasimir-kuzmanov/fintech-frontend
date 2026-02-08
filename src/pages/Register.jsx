@@ -12,70 +12,73 @@ const Register = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault()
-    setError('')
+    setError(null)
     setSuccess(false)
     setIsSubmitting(true)
 
     try {
       await apiClient.register({ username, password })
-      setIsSubmitting(false)
       setSuccess(true)
-    } catch (error) {
-      setError(error?.error || error?.message || 'Registration failed')
+    } catch (err) {
+      setError(err?.error || err?.message || 'Registration failed')
+    } finally {
       setIsSubmitting(false)
-      return
     }
   }
 
   return (
     <div className="page" data-testid="register-page">
-      <div className="page-header">
-        <h1>Register</h1>
-        <p>Create an account to get started.</p>
-      </div>
-
-      {error && (
-        <div className="banner banner-error" data-testid="register-error">
-          {error}
+      <div className="card">
+        <div className="header">
+          <h2>Register</h2>
         </div>
-      )}
 
-      {success && <div data-testid="register-success">Registration successful</div>}
+        {error && (
+          <div className="alert error" data-testid="register-error">
+            {error}
+          </div>
+        )}
 
-      <form className="form" onSubmit={handleSubmit} data-testid="register-form">
-        <label className="form-field">
-          Username
+        {success && (
+          <div className="alert success" data-testid="register-success">
+            Registration successful
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} data-testid="register-form">
           <input
             data-testid="register-username"
-            type="text"
+            placeholder="Username"
             value={username}
             onChange={(event) => setUsername(event.target.value)}
           />
-        </label>
-        <label className="form-field">
-          Password
+
           <input
             data-testid="register-password"
             type="password"
+            placeholder="Password"
             value={password}
             onChange={(event) => setPassword(event.target.value)}
           />
-        </label>
-        <button
-          data-testid="register-submit"
-          className="primary"
-          type="submit"
-          disabled={isSubmitting}
-        >
-          {isSubmitting ? 'Creating...' : 'Register'}
-        </button>
-        <button type="button" data-testid="go-to-login" onClick={() => navigate('/login')}>
-          Back to login
-        </button>
-      </form>
 
-      <div className="page-footer">
-        <span>Already registered? Use the login form above.</span>
+          <button
+            className="primary"
+            data-testid="register-submit"
+            type="submit"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? 'Creating...' : 'Register'}
+          </button>
+
+          <button
+            type="button"
+            className="link"
+            data-testid="go-to-login"
+            onClick={() => navigate('/login')}
+          >
+            Back to login
+          </button>
+        </form>
       </div>
     </div>
   )

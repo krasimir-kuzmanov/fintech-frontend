@@ -1,0 +1,207 @@
+/* ---- Base ---- */
+:root {
+  --bg: #f7f7f8;
+  --card: #ffffff;
+  --text: #111827;
+  --muted: #6b7280;
+  --border: #e5e7eb;
+
+  --primary: #2563eb;
+  --primary-hover: #1d4ed8;
+
+  --danger-bg: #fef2f2;
+  --danger-text: #991b1b;
+  --danger-border: #fecaca;
+
+  --success-bg: #f0fdf4;
+  --success-text: #166534;
+  --success-border: #bbf7d0;
+
+  --radius: 12px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Apple Color Emoji",
+    "Segoe UI Emoji";
+  background: var(--bg);
+  color: var(--text);
+}
+
+/* ---- Layout ---- */
+.page {
+  max-width: 920px;
+  margin: 48px auto;
+  padding: 0 16px;
+}
+
+.header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.header h2 {
+  margin: 0;
+  font-size: 28px;
+}
+
+.subtitle {
+  color: var(--muted);
+  margin-top: 6px;
+  margin-bottom: 0;
+}
+
+/* ---- Card / sections ---- */
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+}
+
+@media (min-width: 860px) {
+  .grid-2 {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* ---- Forms ---- */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+label {
+  font-size: 14px;
+  color: var(--muted);
+}
+
+input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font-size: 14px;
+  outline: none;
+  background: #fff;
+}
+
+input:focus {
+  border-color: rgba(37, 99, 235, 0.6);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+button {
+  appearance: none;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+button.primary {
+  background: var(--primary);
+  color: #fff;
+}
+
+button.primary:hover {
+  background: var(--primary-hover);
+}
+
+button.secondary {
+  background: transparent;
+  border-color: var(--border);
+  color: var(--text);
+}
+
+button.link {
+  background: transparent;
+  border: none;
+  padding: 0;
+  color: var(--primary);
+  text-align: left;
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ---- Messages ---- */
+.alert {
+  border-radius: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+}
+
+.alert.error {
+  background: var(--danger-bg);
+  border-color: var(--danger-border);
+  color: var(--danger-text);
+}
+
+.alert.success {
+  background: var(--success-bg);
+  border-color: var(--success-border);
+  color: var(--success-text);
+}
+
+.muted {
+  color: var(--muted);
+}
+
+/* ---- Transactions ---- */
+.tx-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.tx-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.tx-item:last-child {
+  border-bottom: none;
+}
+
+.tx-left {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.tx-type {
+  font-weight: 600;
+}
+
+.tx-meta {
+  color: var(--muted);
+  font-size: 12px;
+}

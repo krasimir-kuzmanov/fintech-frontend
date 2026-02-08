@@ -3,6 +3,11 @@
 All notable changes to this project will be documented in this file.
 This project follows Keep a Changelog format.
 
+## 0.0.10
+- Add a unified global stylesheet in `src/styles.css` for base, layout, forms, alerts, and transactions.
+- Refactor `Login`, `Register`, and `Dashboard` page structure to use shared style primitives (`page`, `card`, `grid-2`, `stack`).
+- Keep existing `data-testid` selectors stable while improving readability and responsive layout.
+
 ## 0.0.9
 - Add backend logout integration via `POST /auth/logout` from dashboard logout.
 - Make logout best effort: clear local auth state and redirect to login even if backend logout fails.
