@@ -3,6 +3,11 @@
 All notable changes to this project will be documented in this file.
 This project follows Keep a Changelog format.
 
+## 0.0.9
+- Add backend logout integration via `POST /auth/logout` from dashboard logout.
+- Make logout best effort: clear local auth state and redirect to login even if backend logout fails.
+- Handle `401` responses in dashboard API flows by clearing auth and redirecting to `/login`.
+
 ## 0.0.8
 - Add make payment form to dashboard with success/error handling.
 - Refresh balance and transactions after successful payment.

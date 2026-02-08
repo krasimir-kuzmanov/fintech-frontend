@@ -46,6 +46,7 @@ App starts at:
 **API Calls**
 - Register: `POST /auth/register`
 - Login: `POST /auth/login`
+- Logout: `POST /auth/logout`
 - Balance: `GET /account/{accountId}`
 - Fund: `POST /account/{accountId}/fund`
 - Payment: `POST /transaction/payment`
@@ -57,7 +58,8 @@ Do not rely on CSS classes, text content, or DOM structure in UI tests.
 
 ## Notes
 - Login stores `token` and `accountId` in localStorage.
-- Dashboard includes fund and make payment forms.
-- 401 responses should trigger logout and re-render.
+- Dashboard includes fund, make payment, and logout actions.
+- Logout calls backend (`/auth/logout`) and always clears local auth state.
+- 401 responses in dashboard flows clear auth and redirect to `/login`.
 - 403 responses should show an error banner.
 - Data is deterministic based on backend responses; no client-side mocking.

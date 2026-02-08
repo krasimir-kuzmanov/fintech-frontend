@@ -14,7 +14,10 @@ async function request(path, options = {}) {
   const body = hasJson ? await response.json() : null
 
   if (!response.ok) {
-    const error = body || { status: response.status }
+    const error =
+      body && typeof body === 'object'
+        ? { status: response.status, ...body }
+        : { status: response.status, message: body }
     throw error
   }
 
@@ -33,6 +36,15 @@ export const apiClient = {
     return request('/auth/login', {
       method: 'POST',
       body: JSON.stringify(data),
+    })
+  },
+
+  logout(token) {
+    return request('/auth/logout', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     })
   },
 
