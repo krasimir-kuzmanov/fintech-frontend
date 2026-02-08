@@ -3,6 +3,11 @@
 All notable changes to this project will be documented in this file.
 This project follows Keep a Changelog format.
 
+## 0.0.11
+- Ensure fund requests keep Content-Type: application/json when auth headers are present.
+- Send funding amount as a numeric JSON value from dashboard submit flow.
+- Keep frontend behavior aligned with backend contract for POST /account/{accountId}/fund.
+
 ## 0.0.10
 - Add a unified global stylesheet in `src/styles.css` for base, layout, forms, alerts, and transactions.
 - Refactor `Login`, `Register`, and `Dashboard` page structure to use shared style primitives (`page`, `card`, `grid-2`, `stack`).
