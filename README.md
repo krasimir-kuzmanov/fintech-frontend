@@ -6,14 +6,13 @@ This frontend is intentionally designed to be consumed by automated UI and API t
 
 **Tech Stack**
 - React 19 + Vite 7
-- Routing: React Router
 - Styling: Plain CSS
 - API: Fetch
 - Auth: Bearer token stored in localStorage
 
 **Project Layout**
-- App shell + routes: `src/App.jsx`
-- Auth context: `src/hooks/useAuth.js`
+- App shell: `src/App.jsx`
+- Auth hook: `src/hooks/useAuth.js`
 - API client: `src/api/client.js`
 - Pages: `src/pages/*`
 - Components: `src/components/*`
@@ -48,6 +47,7 @@ All interactive elements and key values are labeled with stable `data-testid` se
 Do not rely on CSS classes, text content, or DOM structure in UI tests.
 
 ## Notes
-- 401 responses trigger logout + redirect to `/login`.
-- 403 responses show an error banner.
+- No router by design (login and register render together until authenticated).
+- 401 responses should trigger logout and re-render.
+- 403 responses should show an error banner.
 - Data is deterministic based on backend responses; no client-side mocking.
