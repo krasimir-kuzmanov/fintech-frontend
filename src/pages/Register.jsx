@@ -1,25 +1,27 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { apiClient } from '../api/client.js'
 
 const Register = () => {
+  const navigate = useNavigate()
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-  const [error, setError] = useState('')
+  const [error, setError] = useState(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [success, setSuccess] = useState('')
+  const [success, setSuccess] = useState(false)
 
   const handleSubmit = async (event) => {
     event.preventDefault()
     setError('')
-    setSuccess('')
+    setSuccess(false)
     setIsSubmitting(true)
 
     try {
       await apiClient.register({ username, password })
       setIsSubmitting(false)
-      setSuccess('Registration successful. You can log in above.')
+      setSuccess(true)
     } catch (error) {
-      setError(error?.error || 'Registration failed')
+      setError(error?.error || error?.message || 'Registration failed')
       setIsSubmitting(false)
       return
     }
@@ -38,11 +40,7 @@ const Register = () => {
         </div>
       )}
 
-      {success && (
-        <div className="banner banner-success" data-testid="register-success">
-          {success}
-        </div>
-      )}
+      {success && <div data-testid="register-success">Registration successful</div>}
 
       <form className="form" onSubmit={handleSubmit} data-testid="register-form">
         <label className="form-field">
@@ -70,6 +68,9 @@ const Register = () => {
           disabled={isSubmitting}
         >
           {isSubmitting ? 'Creating...' : 'Register'}
+        </button>
+        <button type="button" data-testid="go-to-login" onClick={() => navigate('/login')}>
+          Back to login
         </button>
       </form>
 

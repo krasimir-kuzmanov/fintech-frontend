@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { apiClient } from '../api/client.js'
 import BalanceCard from '../components/BalanceCard.jsx'
 import FundForm from '../components/FundForm.jsx'
@@ -6,6 +7,7 @@ import PaymentForm from '../components/PaymentForm.jsx'
 import TransactionList from '../components/TransactionList.jsx'
 
 const Dashboard = ({ auth }) => {
+  const navigate = useNavigate()
   const { accountId, token, logout } = auth
   const [account, setAccount] = useState(null)
   const [transactions, setTransactions] = useState([])
@@ -16,6 +18,7 @@ const Dashboard = ({ auth }) => {
 
   const handleUnauthorized = () => {
     logout()
+    navigate('/login')
   }
 
   const loadAccount = async () => {
@@ -101,6 +104,7 @@ const Dashboard = ({ auth }) => {
 
   const handleLogout = () => {
     logout()
+    navigate('/login')
   }
 
   return (
