@@ -62,8 +62,15 @@ function Dashboard({ auth }) {
     e.preventDefault()
     setFundError(null)
 
+    const trimmedAmount = fundAmount.trim()
+    const numericAmount = Number(trimmedAmount)
+    if (trimmedAmount === '' || !Number.isFinite(numericAmount)) {
+      setFundError('Enter a valid numeric amount')
+      return
+    }
+
     try {
-      await apiClient.fundAccount(accountId, fundAmount, token)
+      await apiClient.fundAccount(accountId, numericAmount, token)
       setFundAmount('')
       loadBalance()
     } catch (err) {
@@ -158,6 +165,8 @@ function Dashboard({ auth }) {
 
               <input
                 data-testid="fund-amount"
+                type="number"
+                step="any"
                 placeholder="Amount"
                 value={fundAmount}
                 onChange={(e) => setFundAmount(e.target.value)}
