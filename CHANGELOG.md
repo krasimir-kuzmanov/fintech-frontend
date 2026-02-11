@@ -3,6 +3,9 @@
 All notable changes to this project will be documented in this file.
 This project follows Keep a Changelog format.
 
+## 0.0.12
+- Add `data-txid` attribute to dashboard transaction items for stable UI/API transaction ID consistency checks in E2E tests.
+
 ## 0.0.11
 - Ensure fund requests keep Content-Type: application/json when auth headers are present.
 - Send funding amount as a numeric JSON value from dashboard submit flow.
