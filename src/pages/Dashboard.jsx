@@ -235,6 +235,7 @@ function Dashboard({ auth }) {
                     key={tx.transactionId}
                     className="tx-item"
                     data-testid="transaction-item"
+                    data-txid={tx.transactionId}
                   >
                     <div className="tx-left">
                       <span className="tx-type">{type}</span>
